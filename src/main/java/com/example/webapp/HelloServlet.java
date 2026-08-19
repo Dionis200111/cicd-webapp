@@ -29,6 +29,7 @@ public class HelloServlet extends HttpServlet {
                     <h1>Hello from my CI/CD WebApp!</h1>
                     <p>This application is running inside Tomcat.</p>
                     <p>Deployed using Docker.</p>
+                    <p>UPDATED PIPELINE WORKEDD!!</p>
                 </body>
             </html>
             """);
