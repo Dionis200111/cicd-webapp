@@ -2,22 +2,43 @@ trigger:
 - main
 
 pool:
-  name: onpremisepool
+  name: YOUR_AGENT_POOL_NAME
 
 steps:
 
+# 1. Get the source code
 - checkout: self
 
+
+# 2. Build the WAR file
 - script: mvn clean package
   displayName: 'Build WAR with Maven'
 
+
+# 3. Build the Docker image
 - script: docker build -t cicd-webapp:latest .
   displayName: 'Build Docker image'
 
+
+# 4. Deploy the Docker container
 - powershell: |
+    Write-Host "Stopping old container if it exists..."
+
+    try {
+        docker stop cicd-webapp
+    }
+    catch {
+        Write-Host "No existing container to stop."
+    }
+
     Write-Host "Removing old container if it exists..."
 
-    docker rm -f cicd-webapp 2>$null
+    try {
+        docker rm cicd-webapp
+    }
+    catch {
+        Write-Host "No existing container to remove."
+    }
 
     Write-Host "Starting new container..."
 
@@ -26,7 +47,7 @@ steps:
       -p 8080:8080 `
       cicd-webapp:latest
 
-    Write-Host "Running containers:"
+    Write-Host "Checking running containers..."
 
     docker ps
   displayName: 'Deploy Docker container'
