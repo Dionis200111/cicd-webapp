@@ -1,0 +1,21 @@
+trigger:
+- main
+
+pool:
+  name: onpremisepool
+
+steps:
+
+- checkout: self
+
+- script: mvn clean package
+  displayName: 'Build WAR with Maven'
+
+- script: docker build -t cicd-webapp:latest .
+  displayName: 'Build Docker image'
+
+- script: |
+    docker stop cicd-webapp || exit 0
+    docker rm cicd-webapp || exit 0
+    docker run -d --name cicd-webapp -p 8080:8080 cicd-webapp:latest
+  displayName: 'Deploy Docker container'
